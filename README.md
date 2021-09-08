@@ -1,2 +1,2 @@
 # prosqlctl
-This is the installed for prosql-agent
+This is the installer for prosql-agent
