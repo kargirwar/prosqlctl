@@ -12,6 +12,7 @@ import (
 	utils "github.com/kargirwar/prosqlctl/utils"
 )
 
+const RELEASE_ARCHIVE = "release.zip"
 const UNIT = `
 [Unit]
 Description=prosql-agent for prosql.io
@@ -70,12 +71,44 @@ func StartAgent() {
 	}
 }
 
+func DownloadAgent() {
+	release := utils.GetLatestRelease()
+
+	//Download and extract
+	fmt.Println("Updating to " + release.Version)
+	fmt.Printf("Downloading release ..")
+	utils.DownloadFile(RELEASE_ARCHIVE, release.Linux)
+	fmt.Println("Done.")
+
+	fmt.Printf("Extracting files ..")
+	utils.Unzip(RELEASE_ARCHIVE, utils.GetCwd())
+	fmt.Println("Done.")
+}
+
+func Cleanup() {
+	fmt.Printf("Cleaning up ..")
+
+	err := os.RemoveAll("prosql-agent")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//delete archive
+	err = os.Remove(RELEASE_ARCHIVE)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Done.")
+}
+
 func CopyAgent() {
 	fmt.Println("Copying agent to /usr/local/bin ...")
-	program := utils.GetCwd() + "/prosql-agent"
+	agent := utils.GetCwd() + "/prosql-agent/prosql-agent"
+
 	//copy executable to /usr/local/bin
-	cpCmd := exec.Command("cp", program, "/usr/local/bin")
-	err := cpCmd.Run()
+	cmd := exec.Command("cp", agent, "/usr/local/bin")
+	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,7 +143,4 @@ func StopAgent() {
 		//can't do much about error here
 		log.Println(err)
 	}
-}
-
-func UpdateAgent() {
 }
