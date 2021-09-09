@@ -70,17 +70,6 @@ func unInstallAgent() {
 	StopAgent()
 }
 
-func copyFrom(dir string) {
-	program := dir + "/prosql-agent/release/mac/" + BINARY
-
-	//copy executable to /usr/local/bin
-	cmd := exec.Command("cp", program, utils.GetCwd())
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func StartAgent() {
 	//create plist and use launchctrl to start service
 	fmt.Println("Creating plist ...")
