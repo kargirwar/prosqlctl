@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"text/template"
-	"time"
 
 	utils "github.com/kargirwar/prosqlctl/utils"
 )
@@ -30,7 +29,7 @@ const PLIST = `<?xml version='1.0' encoding='UTF-8'?>
 </plist>
 `
 
-func UpdateAgent() {
+func DownloadAgent() {
 	release := utils.GetLatestRelease()
 
 	//Download and extract
@@ -40,31 +39,14 @@ func UpdateAgent() {
 	fmt.Println("Done.")
 
 	fmt.Printf("Extracting files ..")
-	t := time.Now()
-	now := fmt.Sprintf("%d-%02d-%02dT%02d-%02d-%02d",
-		t.Year(), t.Month(), t.Day(),
-		t.Hour(), t.Minute(), t.Second())
-
-	dir := "temp-" + now
-	err := os.MkdirAll(dir, os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	utils.Unzip(RELEASE_ARCHIVE, dir)
+	utils.Unzip(RELEASE_ARCHIVE, utils.GetCwd())
 	fmt.Println("Done.")
+}
 
-	//========================================================
-	//Copy agent to current directory, uninstall current version
-	//and install updated version
-	copyFrom(dir)
-	unInstallAgent()
-	installAgent()
-	//========================================================
-
+func Cleanup() {
 	fmt.Printf("Cleaning up ..")
-	//delete temp files
-	err = os.RemoveAll(dir)
+
+	err := os.RemoveAll("prosql-agent")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -129,7 +111,7 @@ func StartAgent() {
 
 func CopyAgent() {
 	fmt.Println("Copying agent to /usr/local/bin ...")
-	program := utils.GetCwd() + "/prosql-agent"
+	program := utils.GetCwd() + "/prosql-agent/prosql-agent"
 
 	//copy executable to /usr/local/bin
 	cmd := exec.Command("cp", "-v", program, "/usr/local/bin")
