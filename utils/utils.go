@@ -7,9 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
+	"path/filepath"
 )
 
 const CURRENT_RELEASE = "https://raw.githubusercontent.com/kargirwar/prosql-agent/master/current-release.json"
@@ -60,13 +59,8 @@ func DownloadFile(fileName string, url string) (err error) {
 }
 
 func GetStatus() *Response {
-	r, err := http.NewRequest("GET", STATUS_URL, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var client = &http.Client{Timeout: 1 * time.Second}
-	res, err := client.Do(r)
+	response := &Response{}
+	err := GetJson(STATUS_URL, response)
 
 	if err != nil {
 		return &Response{
@@ -75,18 +69,7 @@ func GetStatus() *Response {
 		}
 	}
 
-	defer res.Body.Close()
-
-	var response Response
-	err = json.NewDecoder(res.Body).Decode(&response)
-	if err != nil {
-		return &Response{
-			Status: "error",
-			Msg:    err.Error(),
-		}
-	}
-
-	return &response
+	return response
 }
 
 //https://gist.github.com/paulerickson/6d8650947ee4e3f3dbcc28fde10eaae7
@@ -144,28 +127,30 @@ func GetCwd() string {
 }
 
 func GetLatestRelease() *Release {
-	//get the current release
-	resp, err := http.Get(CURRENT_RELEASE)
+	release := &Release{}
+	err := GetJson(CURRENT_RELEASE, release)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer resp.Body.Close()
+	return release
+}
 
-	body, err := io.ReadAll(resp.Body)
+func GetJson(url string, target interface{}) error {
+	var client = &http.Client{Timeout: 10 * time.Second}
+	r, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	str := string(body)
-	str = strings.TrimSpace(str)
-	var release Release
-	err = json.Unmarshal([]byte(str), &release)
+	res, err := client.Do(r)
 	if err != nil {
-		log.Fatal(err)
+			return err
 	}
 
-	return &release
+	defer res.Body.Close()
+
+	return json.NewDecoder(res.Body).Decode(target)
 }
 
 func GetValue(r *Response, k string) string {
