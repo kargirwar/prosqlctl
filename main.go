@@ -77,10 +77,10 @@ func installAgent() {
 		return
 	}
 
-	utils.DownloadAgent()
+	adapter.DownloadAgent()
 	adapter.CopyAgent()
 	adapter.StartAgent()
-	utils.Cleanup()
+	adapter.Cleanup()
 	fmt.Println("Installed successfully!")
 }
 
