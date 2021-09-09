@@ -20,17 +20,17 @@ func DownloadAgent() {
 
 	//Download and extract
 	fmt.Println("Updating to " + release.Version)
-	fmt.Printf("Downloading release ..")
+	fmt.Printf("Downloading release.. ")
 	utils.DownloadFile(RELEASE_ARCHIVE, release.Windows)
 	fmt.Println("Done.")
 
-	fmt.Printf("Extracting files ..")
+	fmt.Printf("Extracting files.. ")
 	utils.Unzip(RELEASE_ARCHIVE, utils.GetCwd())
 	fmt.Println("Done.")
 }
 
 func Cleanup() {
-	fmt.Printf("Cleaning up ..")
+	fmt.Printf("Cleaning up.. ")
 
 	err := os.RemoveAll("prosql-agent")
 	if err != nil {
@@ -70,7 +70,7 @@ func StartAgent() {
 	root := os.Getenv("programfiles")
 	agent := filepath.Join(root, "ProsqlAgent", "prosql-agent.exe")
 
-	fmt.Printf("Installing agent ..")
+	fmt.Printf("Installing agent.. ")
 	cmd := exec.Command("nssm.exe", "install", "prosql-agent", agent)
 	err := cmd.Run()
 	if err != nil {
@@ -78,7 +78,7 @@ func StartAgent() {
 	}
 	fmt.Println("Done.")
 
-	fmt.Printf("Setting app directory..")
+	fmt.Printf("Setting app directory.. ")
 	appdir := filepath.Join(root, "ProsqlAgent")
 	cmd = exec.Command("nssm.exe", "set", "prosql-agent", "AppDirectory", appdir)
 	err = cmd.Run()
@@ -87,7 +87,7 @@ func StartAgent() {
 	}
 	fmt.Println("Done.")
 
-	fmt.Printf("Starting agent..")
+	fmt.Printf("Starting agent.. ")
 	cmd = exec.Command("nssm.exe", "start", "prosql-agent")
 	err = cmd.Run()
 	if err != nil {
