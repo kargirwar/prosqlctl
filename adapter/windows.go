@@ -13,39 +13,6 @@ import (
 	utils "github.com/kargirwar/prosqlctl/utils"
 )
 
-const RELEASE_ARCHIVE = "release.zip"
-
-func DownloadAgent() {
-	release := utils.GetLatestRelease()
-
-	//Download and extract
-	fmt.Println("Updating to " + release.Version)
-	fmt.Printf("Downloading release.. ")
-	utils.DownloadFile(RELEASE_ARCHIVE, release.Windows)
-	fmt.Println("Done.")
-
-	fmt.Printf("Extracting files.. ")
-	utils.Unzip(RELEASE_ARCHIVE, utils.GetCwd())
-	fmt.Println("Done.")
-}
-
-func Cleanup() {
-	fmt.Printf("Cleaning up.. ")
-
-	err := os.RemoveAll("prosql-agent")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	//delete archive
-	err = os.Remove(RELEASE_ARCHIVE)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Done.")
-}
-
 func CopyAgent() {
 	root := os.Getenv("programfiles")
 	path := filepath.Join(root, "ProsqlAgent")

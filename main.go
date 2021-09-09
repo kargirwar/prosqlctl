@@ -61,7 +61,8 @@ func main() {
 	if *status {
 		res := utils.GetStatus()
 		if res.Status == "ok" {
-			fmt.Println("prosql-agent is installed and running")
+			version := utils.GetValue(res, "version")
+			fmt.Printf("prosql-agent %s is installed and running\n", version)
 			return
 		}
 
@@ -76,10 +77,10 @@ func installAgent() {
 		return
 	}
 
-	adapter.DownloadAgent()
+	utils.DownloadAgent()
 	adapter.CopyAgent()
 	adapter.StartAgent()
-	adapter.Cleanup()
+	utils.Cleanup()
 	fmt.Println("Installed successfully!")
 }
 

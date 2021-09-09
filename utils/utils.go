@@ -3,16 +3,18 @@ package utils
 import (
 	"archive/zip"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"time"
 	"path/filepath"
+	"time"
 )
 
 const CURRENT_RELEASE = "https://raw.githubusercontent.com/kargirwar/prosql-agent/master/current-release.json"
 const STATUS_URL = "http://localhost:23890/about"
+const RELEASE_ARCHIVE = "release.zip"
 
 type Release struct {
 	Version string
@@ -27,6 +29,36 @@ type Response struct {
 	ErrorCode string      `json:"error-code"`
 	Data      interface{} `json:"data"`
 	Eof       bool        `json:"eof"`
+}
+
+func DownloadAgent() {
+	release := GetLatestRelease()
+
+	//Download and extract
+	fmt.Printf("Downloading release %s .. ", release.Version)
+	DownloadFile(RELEASE_ARCHIVE, release.Windows)
+	fmt.Println("Done.")
+
+	fmt.Printf("Extracting files.. ")
+	Unzip(RELEASE_ARCHIVE, GetCwd())
+	fmt.Println("Done.")
+}
+
+func Cleanup() {
+	fmt.Printf("Cleaning up.. ")
+
+	err := os.RemoveAll("prosql-agent")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//delete archive
+	err = os.Remove(RELEASE_ARCHIVE)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Done.")
 }
 
 func DownloadFile(fileName string, url string) (err error) {
@@ -145,7 +177,7 @@ func GetJson(url string, target interface{}) error {
 
 	res, err := client.Do(r)
 	if err != nil {
-			return err
+		return err
 	}
 
 	defer res.Body.Close()
