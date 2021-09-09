@@ -12,6 +12,7 @@ import (
 
 	utils "github.com/kargirwar/prosqlctl/utils"
 )
+
 const RELEASE_ARCHIVE = "release.zip"
 
 func DownloadAgent() {
@@ -43,7 +44,6 @@ func Cleanup() {
 
 	fmt.Println("Done.")
 }
-
 
 func CopyAgent() {
 	root := os.Getenv("programfiles")
@@ -111,4 +111,15 @@ func StopAgent() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	root := os.Getenv("programfiles")
+	fmt.Printf("Deleting agent from %s..", root)
+
+	appdir := filepath.Join(root, "ProsqlAgent")
+	err = os.RemoveAll(appdir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Done.")
 }
