@@ -33,8 +33,7 @@ func DownloadAgent() {
 	release := utils.GetLatestRelease()
 
 	//Download and extract
-	fmt.Println("Updating to " + release.Version)
-	fmt.Printf("Downloading release ..")
+	fmt.Printf("Downloading release %s .. ", release.Version)
 	utils.DownloadFile(RELEASE_ARCHIVE, release.Mac)
 	fmt.Println("Done.")
 
