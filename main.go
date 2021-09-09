@@ -9,6 +9,8 @@ import (
 	"github.com/kargirwar/prosqlctl/utils"
 )
 
+var VERSION = "VERSION"
+
 const MAX_TRIES = 3
 
 func main() {
@@ -17,6 +19,7 @@ func main() {
 	var uninstall = flag.Bool("uninstall", false, "Uninstall prosql-agent from your system")
 	var update = flag.Bool("update", false, "Update prosql-agent")
 	var status = flag.Bool("status", false, "Show prosql-agent status")
+	var version = flag.Bool("version", false, "Show prosqlctl version")
 	flag.Parse()
 
 	flag.Usage = func() {
@@ -32,6 +35,11 @@ func main() {
 
 	if flag.NFlag() == 0 {
 		flag.Usage()
+		return
+	}
+
+	if *version {
+		fmt.Println("prosqlctl version: " + VERSION)
 		return
 	}
 
