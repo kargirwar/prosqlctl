@@ -86,6 +86,20 @@ func StartAgent() {
 	}
 	fmt.Println("Done.")
 
+	fmt.Printf("Setting home directory.. ")
+
+	dir := os.Getenv("HOMEDRIVE")
+	path := os.Getenv("HOMEPATH")
+	homedir := filepath.Join(dir, path)
+
+	cmd = exec.Command(
+		"nssm.exe", "set", "prosql-agent", "AppEnvironmentExtra", "USER_HOME_DIR="+homedir)
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Done.")
+
 	fmt.Printf("Starting agent.. ")
 	cmd = exec.Command("nssm.exe", "start", "prosql-agent")
 	err = cmd.Run()
