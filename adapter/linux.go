@@ -1,3 +1,4 @@
+//go:build linux
 // +build linux
 
 package adapter
@@ -20,6 +21,7 @@ Description=prosql-agent for prosql.io
 WantedBy=multi-user.target
 [Service]
 Type=simple
+User={{.User}}
 ExecStart={{.Program}}
 WorkingDirectory={{.WorkingDir}}
 Restart=always
@@ -33,11 +35,13 @@ func StartAgent() {
 	//create unit file and use systemctl to start agent
 	fmt.Println("Creating unit ...")
 	data := struct {
+		User       string
 		Program    string
 		WorkingDir string
 	}{
 		Program:    "prosql-agent",
 		WorkingDir: utils.GetCwd(),
+		User:       os.Getenv("SUDO_USER"),
 	}
 
 	unit := fmt.Sprintf("/etc/systemd/system/prosql-agent.service")
