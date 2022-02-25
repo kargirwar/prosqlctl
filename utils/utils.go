@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const CURRENT_RELEASE = "https://raw.githubusercontent.com/kargirwar/prosql-agent/master/current-release.json"
+const CURRENT_RELEASE = "https://raw.githubusercontent.com/kargirwar/prosql-agent/rc/current-release.json"
 const STATUS_URL = "http://localhost:23890/about"
 
 type Release struct {
