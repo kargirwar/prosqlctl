@@ -7,7 +7,9 @@ nssm.exe is sourced from https://nssm.cc/download
 
 # Building
 Mac: go build -tags mac
+
 Linux: go build -tags linux
+
 Windows: go build -tags windows
 
 For cross compiling use GOOS as follows:
