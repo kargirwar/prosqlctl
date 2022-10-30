@@ -120,7 +120,7 @@ func CopyAgent() {
 func DelAgent() {
 	fmt.Println("Deleting agent from " + getRootDir())
 	//copy executable to /usr/local/bin
-	cmd := exec.Command("rm", "-f", getRootDir() + "/prosql-agent")
+	cmd := exec.Command("rm", "-rf", getRootDir())
 	err := cmd.Run()
 
 	if err != nil {
