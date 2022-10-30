@@ -1,3 +1,4 @@
+//go:build mac
 // +build mac
 
 package adapter
@@ -28,6 +29,7 @@ const PLIST = `<?xml version='1.0' encoding='UTF-8'?>
   </dict>
 </plist>
 `
+const ROOT_DIR = "~/.prosql-agent/bin"
 
 func DownloadAgent() {
 	release := utils.GetLatestRelease()
@@ -77,7 +79,8 @@ func StartAgent() {
 		Program string
 	}{
 		Label:   LABEL,
-		Program: "/usr/local/bin/prosql-agent",
+		//Program: "/usr/local/prosql-agent/bin/prosql-agent",
+		Program: getRootDir() + "/prosql-agent",
 	}
 
 	plist := fmt.Sprintf("%s/Library/LaunchAgents/%s.plist", os.Getenv("HOME"), data.Label)
@@ -98,21 +101,26 @@ func StartAgent() {
 }
 
 func CopyAgent() {
-	fmt.Println("Copying agent to /usr/local/bin ...")
+	err := os.MkdirAll(getRootDir(), 0700)
+	if err != nil && !os.IsExist(err) {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Copying agent to " + getRootDir())
 	program := utils.GetCwd() + "/prosql-agent/prosql-agent"
 
 	//copy executable to /usr/local/bin
-	cmd := exec.Command("cp", "-v", program, "/usr/local/bin")
-	err := cmd.Run()
+	cmd := exec.Command("cp", "-v", program, getRootDir())
+	err = cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func DelAgent() {
-	fmt.Println("Deleting agent from /usr/local/bin ...")
+	fmt.Println("Deleting agent from " + getRootDir())
 	//copy executable to /usr/local/bin
-	cmd := exec.Command("rm", "-f", "/usr/local/bin/prosql-agent")
+	cmd := exec.Command("rm", "-f", getRootDir() + "/prosql-agent")
 	err := cmd.Run()
 
 	if err != nil {
@@ -140,4 +148,8 @@ func StopAgent() {
 		//can't do much about error here
 		log.Println(err)
 	}
+}
+
+func getRootDir() string {
+	return os.Getenv("HOME") + "/.prosql-agent"
 }
